@@ -18,13 +18,28 @@ source('R/zzz.R')
 
 library(MlxConnectors)
 initializeMlxConnectors(software = "monolix")
+library(mlxR)
+
+
+# if no Monolix project, you can start by creating one from R directly
+data = list(dataFile= "data/warfarin_data_mlx.txt",
+headerTypes =c("id", "time", "amount", "observation", "ignore", "ignore", "ignore","ignore"),
+observationTypes = list(dv = "continuous"))
+modelFile <- 'models/pkmodel.txt'
+
+#create mlx project
+newProject(modelFile = modelFile, data = data)
+#save mlx project
+saveProject("/path/to/file.mlxtran")
+
 
 ################################################################ SAEMIX ####################################################################################################################################
-project.file <- "mlxProjects/warfarinmlx/warfarinPK_project.mlxtran"
+project.file <- "mlxProjects/warfarinmlx/warfarinPK_project.mlxtran"  #your mlx project
 loadProject(project.file)
+
 warfa_data <- readDatamlx(project = project.file) 
 # OR READ IT DIRECTLY FROM THE .txt FILE
-# warfa_data <- read.table("data/warfarin_data.txt", header=T)
+warfa_data <- read.table("data/warfarin_data.txt", header=T)
 treat <- warfa_data$treatment[,c(1,3)]
 warfarin.saemix <- merge(treat ,warfa_data$y_1,by="id")
 warfarin.saemix <- warfarin.saemix[order(warfarin.saemix$id),]
@@ -100,9 +115,6 @@ options_warfa<-list(seed=39546,map=F,fim=F,ll.is=F,
   nbiter.mcmc = c(2,2,2), nbiter.saemix = c(K1,K2),
   nbiter.sa=0,displayProgress=TRUE,nbiter.burn =0,nb.chains=1,monolix=TRUE)
 warfa<-saemix(model=saemix.model,data=saemix.data,options_warfa)
-
-
-
 
 
 
