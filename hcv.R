@@ -15,7 +15,6 @@ source('R/SaemixRes.R')
 source('R/SaemixObject.R') 
 source('R/zzz.R') 
 
-library("mlxR")
 library(MlxConnectors)
 initializeMlxConnectors(software = "monolix")
 
@@ -44,6 +43,7 @@ model1cpt<-function(psi,id,xidep) {
 }
 
 
+#read data from monolix project and use it for saemixData object
 hcv_data <- readDatamlx(project = project.file)
 treat <- hcv_data$treatment[,c(3)]
 # hcv.saemix <- cbind(hcv_data$Y,treat)

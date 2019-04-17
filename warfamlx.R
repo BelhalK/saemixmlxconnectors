@@ -1,5 +1,8 @@
-source('R/aaa_generics.R') 
-source('R/compute_LL.R') 
+packagePath = "/Applications/MonolixSuite2018R2.app/Contents/Resources/mlxsuite"
+install.packages(packagePath, repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
+
+source('R/aaa_generics.R')
+source('R/compute_LL.R')
 source('R/func_aux.R') 
 source('R/func_distcond.R') 
 source('R/func_FIM.R')
@@ -16,14 +19,15 @@ source('R/SaemixRes.R')
 source('R/SaemixObject.R') 
 source('R/zzz.R') 
 
-library("mlxR")
 library(MlxConnectors)
 initializeMlxConnectors(software = "monolix")
 
 ################################################################ SAEMIX ####################################################################################################################################
 project.file <- "mlxProjects/warfarinmlx/warfarinPK_project.mlxtran"
 loadProject(project.file)
-warfa_data <- readDatamlx(project = project.file) # OR READ IT DIRECTLY FROM THE .txt FILE
+warfa_data <- readDatamlx(project = project.file) 
+# OR READ IT DIRECTLY FROM THE .txt FILE
+# warfa_data <- read.table("data/warfarin_data.txt", header=T)
 treat <- warfa_data$treatment[,c(1,3)]
 warfarin.saemix <- merge(treat ,warfa_data$y_1,by="id")
 warfarin.saemix <- warfarin.saemix[order(warfarin.saemix$id),]
@@ -86,8 +90,9 @@ model1cpt<-function(psi,id,xidep) {
   return(ypred)
 }
 
-#SINCE monolix=TRUE this model is a dummy SaemixModel object.
-#The Model will be read directly from Monolix.
+#SINCE monolix=TRUE model1cpt is a dummy model
+#The image of the structural model will be directly computed from Monolix
+#The saemixModel is useful for all the param values, only its 'model' argument is not used
 
 saemix.model<-saemixModel(model=model1cpt,description="warfarin",type="structural"
   ,psi0=matrix(c(1,1,1,0,0,0),ncol=3,byrow=TRUE, dimnames=list(NULL, c("ka","V","Cl"))),fixed.estim=c(1,1,1),
@@ -98,12 +103,6 @@ options_warfa<-list(seed=39546,map=F,fim=F,ll.is=F,
   nbiter.mcmc = c(2,2,2), nbiter.saemix = c(K1,K2),
   nbiter.sa=0,displayProgress=TRUE,nbiter.burn =0,nb.chains=1,monolix=TRUE)
 warfa<-saemix(model=saemix.model,data=saemix.data,options_warfa)
-
-
-
-
-
-
 
 
 

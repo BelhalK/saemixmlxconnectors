@@ -15,9 +15,12 @@ source('R/SaemixRes.R')
 source('R/SaemixObject.R') 
 source('R/zzz.R') 
 
-library("mlxR")
 library(MlxConnectors)
 initializeMlxConnectors(software = "monolix")
+
+#if no monolix project, you can create one in R
+mlxtran.file <- 'myfile.mlxtran' #mlxtran file with the model
+saveProject(mlxtran.file)
 
 ################################################################ SAEMIX ####################################################################################################################################
 project.file <- "mlxProjects/warfarinmlx/warfarinPK_project.mlxtran"
