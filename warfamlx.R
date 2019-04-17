@@ -1,6 +1,3 @@
-packagePath = "/Applications/MonolixSuite2018R2.app/Contents/Resources/mlxsuite"
-install.packages(packagePath, repos = NULL, type="source", INSTALL_opts ="--no-multiarch")
-
 source('R/aaa_generics.R')
 source('R/compute_LL.R')
 source('R/func_aux.R') 
