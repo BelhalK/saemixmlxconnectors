@@ -16,9 +16,9 @@ source('R/SaemixRes.R')
 source('R/SaemixObject.R') 
 source('R/zzz.R') 
 
-library(MlxConnectors)
-initializeMlxConnectors(software = "monolix")
-library(mlxR)
+library("mlxR")
+library(lixoftConnectors)
+initializeLixoftConnectors(software = "monolix")
 
 
 # if no Monolix project, you can start by creating one from R directly
