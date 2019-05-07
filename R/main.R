@@ -127,8 +127,8 @@ saemix<-function(model,data,control=list()) {
 ############################################
   
 # Initialisation - creating several lists with necessary information extracted (Uargs, Dargs, opt,varList, suffStat)
-
   xinit<-initialiseMainAlgo(saemix.data,saemix.model,saemix.options)
+
   saemix.model<-xinit$saemix.model
   Dargs<-xinit$Dargs
   Uargs<-xinit$Uargs
@@ -206,7 +206,7 @@ for (kiter in 1:saemix.options$nbiter.tot) { # Iterative portion of algorithm
   DYF<-xmcmc$DYF
   phiM<-xmcmc$phiM
   #  psiM<-transphi(phiM,saemix.model["transform.par"])
-  
+
   # M-step
   if(opt$stepsize[kiter]>0) {
 ############# Stochastic Approximation

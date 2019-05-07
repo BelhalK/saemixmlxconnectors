@@ -2,7 +2,7 @@
 
 [FILEINFO]
 file = '../../data/warfarin_data.csv'
-delimiter = semicolumn
+delimiter = semicolon
 header = {id, time, amt, dv, dvid, wt, sex, age}
 
 [CONTENT]

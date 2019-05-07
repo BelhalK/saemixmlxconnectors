@@ -1,0 +1,55 @@
+<DATAFILE>
+
+[FILEINFO]
+file = '../../../data/warfarin_data_mlx.txt'
+delimiter = tab
+header = {id, time, amt, dv, dvid, wt, sex, age}
+
+[CONTENT]
+id = {use=identifier}
+time = {use=time}
+amt = {use=amount}
+dv = {use=observation, name=dv, type=continuous}
+
+<MODEL>
+
+[INDIVIDUAL]
+input = {EC50_pop, omega_EC50, Emax_pop, omega_Emax}
+
+DEFINITION:
+EC50 = {distribution=logNormal, typical=EC50_pop, sd=omega_EC50}
+Emax = {distribution=logNormal, typical=Emax_pop, sd=omega_Emax}
+
+[LONGITUDINAL]
+input = {a, b}
+
+file = 'band_model.txt'
+
+DEFINITION:
+dv = {distribution=normal, prediction=E, errorModel=combined1(a, b)}
+
+<FIT>
+data = dv
+model = dv
+
+<PARAMETER>
+EC50_pop = {value=1, method=MLE}
+Emax_pop = {value=1, method=MLE}
+a = {value=1, method=MLE}
+b = {value=0.3, method=MLE}
+omega_EC50 = {value=1, method=MLE}
+omega_Emax = {value=1, method=MLE}
+
+<MONOLIX>
+
+[TASKS]
+populationParameters()
+individualParameters(method = {conditionalMean, conditionalMode })
+fim(run = false,method = StochasticApproximation)
+logLikelihood(run = false,method = ImportanceSampling)
+plotResult(method = {outputplot, indfits, obspred, parameterdistribution, covariatemodeldiagnosis, randomeffects, covariancemodeldiagnosis, residualsscatter, residualsdistribution, saemresults })
+
+[SETTINGS]
+GLOBAL:
+exportpath = 'band_model'
+

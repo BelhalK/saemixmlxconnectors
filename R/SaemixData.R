@@ -26,6 +26,7 @@ NULL
 #' An object of the SaemixData class can be created by using the function \code{\link{saemixData}} and contain the following slots:
 #' @slot name.data Object of class \code{"character"}: name of the dataset
 #'     @slot header Object of class \code{"logical"}: whether the dataset/file contains a header. Defaults to TRUE 
+#'     @slot data.mlx Object of class \code{"list"}: the field separator character
 #'     @slot sep Object of class \code{"character"}: the field separator character
 #'     @slot na Object of class \code{"character"}: a character vector of the strings which are to be interpreted as NA values
 #'     @slot name.group Object of class \code{"character"}: name of the column containing the subject id
@@ -95,6 +96,7 @@ setClass(
   representation=representation(
     name.data="character",	# name of dataset
     header="logical",		# for file, whether has header
+    data.mlx="list",   # for file, whether has header
     sep="character",		# if file, separator
     na="character",		# if file, NA symbol(s)
     name.group="character",	# name of column with ID
@@ -189,12 +191,14 @@ setClass(
 setMethod(
   f="initialize",
   signature="SaemixData",
-  definition= function (.Object,name.data,header,sep,na,name.group, name.predictors, name.response, name.covariates, name.X, units, name.mdv, name.cens, name.occ, name.ytype, verbose){
+  definition= function (.Object,name.data,header,data.mlx,sep,na,name.group, name.predictors, name.response, name.covariates, name.X, units, name.mdv, name.cens, name.occ, name.ytype, verbose){
 #    cat ("--- initialising SaemixData Object --- \n")
     if(missing(name.data)) stop ("Please provide a name for the data (dataset or datafile on disk).")
     .Object@name.data<-name.data
     if(missing(header)) header<-TRUE
     .Object@header<-header
+    if(missing(data.mlx)) data.mlx<-list(dataFile="-",headerTypes="-",observationTypes="-")
+    .Object@data.mlx<-data.mlx
     if(missing(sep)) sep<-""
     .Object@sep<-sep
     if(missing(na)) na<-"NA"
@@ -330,6 +334,7 @@ setMethod(
   switch (EXPR=i,
     "name.data"={return(x@name.data)},
     "header"={return(x@header)},
+    "data.mlx"={return(x@data.mlx)},
     "sep"={return(x@sep)},
     "na"={return(x@na)},
     "name.group"={return(x@name.group)},
@@ -363,6 +368,7 @@ setReplaceMethod(
   switch (EXPR=i,
     "name.data"={x@name.data<-value},
     "header"={x@header<-value},
+    "data.mlx"={x@data.mlx<-value},
     "sep"={x@sep<-value},
     "na"={x@na<-value},
     "name.group"={x@name.group<-value},
@@ -489,6 +495,8 @@ setMethod("read",
       cat("Reading data from file",object@name.data,"\n")
       header<-object@header
       if(is.null(header)) header<-TRUE
+      data.mlx<-object@data.mlx
+      if(is.null(data.mlx)) data.mlx<-list()
       sep<-object@sep
       if(is.null(sep)) sep<-""
       na.strings<-object@na
@@ -1117,7 +1125,7 @@ setMethod("plot","SaemixSimData",
 #' plot(saemix.data)
 #' @export saemixData
 
-saemixData<-function(name.data,header,sep,na,name.group,name.predictors, name.response,name.X, name.covariates=c(), name.genetic.covariates=c(), name.mdv="", name.cens="",name.occ="",name.ytype="", units=list(x="",y="",covariates=c()), verbose=TRUE) {
+saemixData<-function(name.data,header,data.mlx,sep,na,name.group,name.predictors, name.response,name.X, name.covariates=c(), name.genetic.covariates=c(), name.mdv="", name.cens="",name.occ="",name.ytype="", units=list(x="",y="",covariates=c()), verbose=TRUE) {
 # setting proper types for the SaemixData class
   if(missing(name.data) & verbose) {
     cat("Error in saemixData: please provide the name of the datafile or dataframe (between quotes)\n")
@@ -1125,6 +1133,7 @@ saemixData<-function(name.data,header,sep,na,name.group,name.predictors, name.re
   }
   if(is.data.frame(name.data)) name.data<-deparse(substitute(name.data))
   if(missing(header)) header<-TRUE
+  if(missing(data.mlx)) data.mlx<-list(dataFile="-",headerTypes="-",observationTypes="-")
   if(missing(sep)) sep<-""
   if(missing(na)) na<-"NA" else {na<-as.character(na);na[is.na(na)]<-"NA"}
   if(missing(name.group)) name.group<-"" else name.group<-as.character(name.group)
@@ -1136,7 +1145,7 @@ saemixData<-function(name.data,header,sep,na,name.group,name.predictors, name.re
   if(missing(name.ytype)) name.ytype<-"" else  name.ytype<-as.character(name.ytype)
   if(missing(name.X)) name.X<-"" else name.X<-as.character(name.X)
   name.covariates<-c(as.character(name.covariates),as.character(name.genetic.covariates))
-  x<-new(Class="SaemixData",name.data=name.data,header=header,sep=sep,na=na, name.group=name.group,name.predictors=name.predictors,name.X=name.X, name.response=name.response,name.covariates=name.covariates,units=units, name.mdv=name.mdv, name.cens=name.cens, name.occ=name.occ, name.ytype=name.ytype, verbose)
+  x<-new(Class="SaemixData",name.data=name.data,header=header,data.mlx = data.mlx,sep=sep,na=na, name.group=name.group,name.predictors=name.predictors,name.X=name.X, name.response=name.response,name.covariates=name.covariates,units=units, name.mdv=name.mdv, name.cens=name.cens, name.occ=name.occ, name.ytype=name.ytype, verbose)
 #  showall(x)
   x1<-read(x)
   if(class(x1)=="SaemixData") {

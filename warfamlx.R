@@ -1,20 +1,20 @@
-source('R/aaa_generics.R')
-source('R/compute_LL.R')
-source('R/func_aux.R') 
-source('R/func_distcond.R') 
-source('R/func_FIM.R')
-source('R/func_plots.R') 
-source('R/func_simulations.R') 
+source('oldR/aaa_generics.R')
+source('oldR/compute_LL.R')
+source('oldR/func_aux.R') 
+source('oldR/func_distcond.R') 
+source('oldR/func_FIM.R')
+source('oldR/func_plots.R') 
+source('oldR/func_simulations.R') 
 
-source('R/main.R')
-source('R/main_estep.R')
-source('R/main_initialiseMainAlgo.R') 
-source('R/main_mstep.R') 
-source('R/SaemixData.R')
-source('R/SaemixModel.R') 
-source('R/SaemixRes.R') 
-source('R/SaemixObject.R') 
-source('R/zzz.R') 
+source('oldR/main.R')
+source('oldR/main_estep.R')
+source('oldR/main_initialiseMainAlgo.R') 
+source('oldR/main_mstep.R') 
+source('oldR/SaemixData.R')
+source('oldR/SaemixModel.R') 
+source('oldR/SaemixRes.R') 
+source('oldR/SaemixObject.R') 
+source('oldR/zzz.R') 
 
 library("mlxR")
 library(lixoftConnectors)
@@ -39,13 +39,10 @@ loadProject(project.file)
 
 warfa_data <- readDatamlx(project = project.file) 
 # OR READ IT DIRECTLY FROM THE .txt FILE
-warfa_data <- read.table("data/warfarin_data.txt", header=T)
-treat <- warfa_data$treatment[,c(1,3)]
-warfarin.saemix <- merge(treat ,warfa_data$y_1,by="id")
-warfarin.saemix <- warfarin.saemix[order(warfarin.saemix$id),]
+warfarin.saemix <- read.table("data/warfarin_data.txt", header=T)
 
 saemix.data<-saemixData(name.data=warfarin.saemix,header=TRUE,sep=" ",na=NA, name.group=c("id"),
-  name.predictors=c("amount","time"),name.response=c("y_1"), name.X="time")
+  name.predictors=c("amount","time"),name.response=c("y1"), name.X="time")
 
 
 model1cpt<-function(psi,id,xidep) { 
@@ -90,7 +87,7 @@ warfarin.saemix <- warfarin.saemix[order(warfarin.saemix$id),]
 
 
 saemix.data<-saemixData(name.data=warfarin.saemix,header=TRUE,sep=" ",na=NA, name.group=c("id"),
-  name.predictors=c("amount","time"),name.response=c("y_1"), name.X="time")
+  name.predictors=c("amount","time"),name.response=c("y1"), name.X="time")
 
 model1cpt<-function(psi,id,xidep) { 
   dose<-xidep[,1]

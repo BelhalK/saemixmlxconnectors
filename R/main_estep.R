@@ -121,7 +121,6 @@ estep<-function(kiter, Uargs, Dargs, opt, structural.model, mean.phi, varList, D
 		}
 		varList$domega2[,nrs2]<-varList$domega2[,nrs2]*(1+opt$stepsize.rw* (nbc2/nt2-opt$proba.mcmc))
 	}
-
 	phiM[,varList$ind.eta]<-mean.phiM[,varList$ind.eta]+etaM
 	return(list(varList=varList,DYF=DYF,phiM=phiM, etaM=etaM))
 }

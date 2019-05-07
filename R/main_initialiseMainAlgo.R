@@ -29,8 +29,21 @@ initialiseMainAlgo<-function(saemix.data,saemix.model,saemix.options) {
 #             nbiter.sa=saemix.options$nbiter.sa,alpha1.sa=saemix.options$alpha.sa,
 #             alpha0.sa=10^(-3/saemix.options$nbiter.sa),nbiter.saemix=saemix.options$nbiter.saemix,
 #             maxim.maxiter=saemix.options$maxim.maxiter,flag.fmin=flag.fmin)
-  
-	structural.model<-saemix.model["model"]
+  	
+  	monolix.flag <- saemix.model["monolix"]
+  	structural.model<-saemix.model["model"]
+
+  	if (monolix.flag){
+  		#this works
+		data <- saemix.data["data.mlx"]
+		modelFile <- structural.model()
+		newProject(modelFile = modelFile, data = data)
+		project.file <- paste0(strsplit(modelFile, '[!?.][:space:]*')[[1]][1],".mlxtran")
+		saveProject(project.file)
+		# loadProject(project.file)
+		loadProject("mlxProjects/warfarinmlx/warfarinPK_project.mlxtran")
+  	}
+
 	nb.parameters<-saemix.model["nb.parameters"]
 	N<-saemix.data["N"]
 	# Initialising residual error model
@@ -163,8 +176,10 @@ initialiseMainAlgo<-function(saemix.data,saemix.model,saemix.options) {
 	# using several Markov chains
 	chdat<-new(Class="SaemixRepData",data=saemix.data, nb.chains=saemix.options$nb.chains)
 	NM<-chdat["NM"]
-	IdM<-chdat["dataM"]$IdM
-	yM<-chdat["dataM"]$yM
+	# IdM<-chdat["dataM"]$IdM
+	IdM <- getObservationInformation()$y_1[,1]
+	yM <- getObservationInformation()$y_1[,3]
+	# yM<-chdat["dataM"]$yM
 	XM<-chdat["dataM"][,saemix.data["name.predictors"],drop=FALSE]
 	io<-matrix(data=0,nrow=N,ncol=max(saemix.data["nind.obs"]))
 	for(i in 1:N)
@@ -217,7 +232,7 @@ initialiseMainAlgo<-function(saemix.data,saemix.model,saemix.options) {
 		etaM[itest.phi,]<-etaMc[itest.phi,]
 		phiM[itest.phi,]<-phiMc[itest.phi,]
 		psiM<-transphi(phiM,saemix.model["transform.par"])
-		if (saemix.options$monolix == TRUE){
+		if (monolix.flag){
 		    tempsiM <- cbind(itest.phi, psiM)
 			colnames(tempsiM) <- c("id",colnames(omega))
 			fpred <- computePredictions(data.frame(tempsiM))[[1]]
@@ -247,7 +262,7 @@ initialiseMainAlgo<-function(saemix.data,saemix.model,saemix.options) {
 	# Data - passed on to functions, unchanged
 	Dargs<-list(IdM=IdM, XM=XM, yM=yM, NM=NM, N=N, nobs=saemix.data["ntot.obs"],
 							yobs=saemix.data["data"][,saemix.data["name.response"]],transform.par=saemix.model["transform.par"],
-							error.model=saemix.model["error.model"],structural.model=structural.model,type=saemix.model["type"],monolix=saemix.options$monolix)
+							error.model=saemix.model["error.model"],structural.model=structural.model,type=saemix.model["type"],monolix=monolix.flag)
 	
 	# List of indices and variables (fixed) - passed on to functions, unchanged
 	nb.parest<-sum(covariate.estim)+ sum(saemix.model["covariance.model"][upper.tri(saemix.model["covariance.model"], diag=TRUE)])+1+as.integer(saemix.model["error.model"]=="combined")
@@ -279,6 +294,5 @@ initialiseMainAlgo<-function(saemix.data,saemix.model,saemix.options) {
 						nbiter.sa=saemix.options$nbiter.sa,alpha1.sa=saemix.options$alpha.sa,
 						alpha0.sa=10^(-3/saemix.options$nbiter.sa),nbiter.saemix=saemix.options$nbiter.saemix,
 						maxim.maxiter=saemix.options$maxim.maxiter,flag.fmin=flag.fmin)
-	
 	return(list(saemix.model=saemix.model, Dargs=Dargs, Uargs=Uargs, varList=varList, opt=opt, DYF=DYF, phiM=phiM, mean.phi=mean.phi,betas=betas, fixedpsi.ini=fixedpsi.ini, allpar0=allpar0))
 }

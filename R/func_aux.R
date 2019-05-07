@@ -375,6 +375,7 @@ compute.LLy_c<-function(phiM,pres,args,Dargs,DYF) {
   if(Dargs$error.model=="exponential")
      fpred<-log(cutoff(fpred))
   gpred<-error(fpred,pres)
+  browser()
   DYF[args$ind.ioM]<-0.5*((Dargs$yM-fpred)/gpred)**2+log(gpred)
   U<-colSums(DYF)
   return(U)

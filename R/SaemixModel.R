@@ -8,6 +8,7 @@ setClass(
     model="function", 		# name of model function
     description="character",	# model description
     type="character",     # type description
+    monolix="logical",     # type description
     psi0="matrix",		# CI for parameter estimates
     transform.par="numeric",	# distribution for model parameters
     fixed.estim="numeric",	# 1 for fixed parameters estimated
@@ -74,7 +75,7 @@ setClass(
 setMethod(
   f="initialize",
   signature="SaemixModel",
-  definition=function(.Object,model,description,type,psi0,transform.par,fixed.estim, error.model,covariate.model,covariance.model,omega.init,error.init,nb.parameters, name.modpar){
+  definition=function(.Object,model,description,type,monolix,psi0,transform.par,fixed.estim, error.model,covariate.model,covariance.model,omega.init,error.init,nb.parameters, name.modpar){
 #    cat ("--- initialising SaemixModel Object --- \n")
     if(missing(model)) {
 #      cat("Error initialising SaemixModel object:\n   The model must be a function, accepting 3 arguments: psi (a vector of parameters), id (a vector of indices) and xidep (a matrix of predictors). Please see the documentation for examples.\n")
@@ -85,6 +86,8 @@ setMethod(
     .Object@description<-description
     if(missing(type)) type<-""
     .Object@type<-type
+    if(missing(monolix)) monolix<-""
+    .Object@monolix<-monolix
     if(missing(psi0) || length(psi0)==0) {
       cat("Error initialising SaemixModel object:\n   Please provide initial estimates for the fixed effect (a matrix with columns named after the parameters in the model).\n")
       return(.Object)
@@ -236,6 +239,7 @@ setMethod(
     "model"={return(x@model)},
     "description"={return(x@description)},
     "type"={return(x@type)},
+    "monolix"={return(x@monolix)},
     "psi0"={return(x@psi0)},
     "transform.par"={return(x@transform.par)},
     "fixed.estim"={return(x@fixed.estim)},
@@ -273,6 +277,7 @@ setReplaceMethod(
     "model"={x@model<-value},
     "description"={return(x@description)},
     "type"={return(x@type)},
+    "monolix"={return(x@monolix)},
     "psi0"={x@psi0<-value},
     "transform.par"={x@transform.par<-value},
     "fixed.estim"={x@fixed.estim<-value},
@@ -528,6 +533,7 @@ setMethod("plot","SaemixModel",
 #' @param description a character string, giving a brief description of the
 #' model or the analysis
 #' @param type a character string, giving model type (structural or likelihood)
+#' @param monolix a boolean on whether or not to use mlxConnectors
 #' @param error.model type of residual error model (valid types are constant,
 #' proportional, combined and exponential). Defaults to constant
 #' @param transform.par the distribution for each parameter (0=normal,
@@ -584,7 +590,14 @@ setMethod("plot","SaemixModel",
 #'   omega.init=matrix(c(1,0,0,0,1,0,0,0,1),ncol=3,byrow=TRUE),error.model="constant")
 #' 
 #' @export saemixModel
-saemixModel<-function(model,psi0,description="", type ="",error.model=character(), transform.par=numeric(),fixed.estim=numeric(),covariate.model=matrix(nrow=0,ncol=0), covariance.model=matrix(nrow=0,ncol=0),omega.init=matrix(nrow=0,ncol=0),error.init=numeric(), name.modpar=character()) {
+saemixModel<-function(model,psi0,description="", type ="", monolix = logical(),error.model=character(), transform.par=numeric(),fixed.estim=numeric(),covariate.model=matrix(nrow=0,ncol=0), covariance.model=matrix(nrow=0,ncol=0),omega.init=matrix(nrow=0,ncol=0),error.init=numeric(), name.modpar=character()) {
+  if(monolix==TRUE){
+    mlx.model <- model
+    model<-function(psi,id,xidep) { 
+      ypred <- mlx.model
+      return(ypred)
+    }
+  }
 # Creating model from class
   if(missing(model)) {
     cat("Error in saemixModel:\n   The model must be a function, accepting 3 arguments: psi (a vector of parameters), id (a vector of indices) and xidep (a matrix of predictors). Please see the documentation for examples.\n")
@@ -622,7 +635,7 @@ saemixModel<-function(model,psi0,description="", type ="",error.model=character(
   if(is.null(colnames(psi0))) {
     cat("Warning: no names given for the parameters in the model, please consider including parameter names.\n")
   }
-  xmod<-try(new(Class="SaemixModel",model=model,description=description,type=type,psi0=psi0, error.model=error.model, transform.par=transform.par,fixed.estim=fixed.estim, covariate.model=covariate.model,covariance.model=covariance.model, omega.init=omega.init,error.init=error.init,name.modpar=name.modpar))
+  xmod<-try(new(Class="SaemixModel",model=model,description=description,type=type,monolix = monolix,psi0=psi0, error.model=error.model, transform.par=transform.par,fixed.estim=fixed.estim, covariate.model=covariate.model,covariance.model=covariance.model, omega.init=omega.init,error.init=error.init,name.modpar=name.modpar))
   if(class(xmod)=="SaemixModel") x1<-try(validObject(xmod),silent=FALSE) else x1<-xmod
   if(class(x1)!="try-error") cat("\n\nThe following SaemixModel object was successfully created:\n\n") else xmod<-"Creation of SaemixModel failed"
   print(xmod)

@@ -1,0 +1,91 @@
+Nonlinear mixed-effects model fit by the SAEM algorithm
+-----------------------------------
+----          Data             ----
+-----------------------------------
+Object of class SaemixData
+    longitudinal data for use with the SAEM algorithm
+Dataset warfarin.saemix 
+    Structured data: dv ~ time + amt | id 
+    X variable for graphs: time () 
+Dataset characteristics:
+    number of subjects:     32 
+    number of observations: 279 
+    average/min/max nb obs: 8.72  /  7  /  14 
+First 10 lines of data:
+    id time amt   dv mdv cens occ ytype
+1  100  0.0 100    .   0    0   1     1
+2  100  0.5   .    0   0    0   1     1
+3  100  1.0   .  1.9   0    0   1     1
+4  100  2.0   .  3.3   0    0   1     1
+5  100  3.0   .  6.6   0    0   1     1
+6  100  6.0   .  9.1   0    0   1     1
+7  100  9.0   . 10.8   0    0   1     1
+8  100 12.0   .  8.6   0    0   1     1
+9  100 24.0   .  5.6   0    0   1     1
+11 100 36.0   .    4   0    0   1     1
+-----------------------------------
+----          Model            ----
+-----------------------------------
+Nonlinear mixed-effects model
+  Model function:  warfarin  Model type:  structural
+function(psi,id,xidep) { 
+      ypred <- mlx.model
+      return(ypred)
+    }
+<bytecode: 0x7f96b3a207f8>
+<environment: 0x7f96b13e1e50>
+  Nb of parameters: 3 
+      parameter names:  ka V Cl 
+      distribution:
+     Parameter Distribution Estimated
+[1,] ka        log-normal   Estimated
+[2,] V         log-normal   Estimated
+[3,] Cl        log-normal   Estimated
+  Variance-covariance matrix:
+   ka V Cl
+ka  1 0  0
+V   0 1  0
+Cl  0 0  1
+  Error model: constant , initial values: a=1 
+    No covariate in the model.
+    Initial values
+             ka V Cl
+Pop.CondInit  1 1  1
+-----------------------------------
+----    Key algorithm options  ----
+-----------------------------------
+    Algorithms: estimation only
+    Number of iterations:  K1=100, K2=50 
+    Number of chains:  1 
+    Seed:  39546 
+    Simulations:
+        nb of simulated datasets used for npde:  1000 
+        nb of simulated datasets used for VPC:  100 
+    Input/output
+        save the results to a file:  TRUE 
+        save the graphs to files:  TRUE 
+        directory where results should be saved:  newdir 
+----------------------------------------------------
+----                  Results                   ----
+----------------------------------------------------
+-----------------  Fixed effects  ------------------
+----------------------------------------------------
+     Parameter Estimate
+[1,] ka        1.04    
+[2,] V         1.10    
+[3,] Cl        0.78    
+[4,] a         <NA>    
+----------------------------------------------------
+-----------  Variance of random effects  -----------
+----------------------------------------------------
+   Parameter Estimate
+ka omega2.ka 0.76    
+V  omega2.V  0.95    
+Cl omega2.Cl 1.13    
+----------------------------------------------------
+------  Correlation matrix of random effects  ------
+----------------------------------------------------
+          omega2.ka omega2.V omega2.Cl
+omega2.ka 1         0        0        
+omega2.V  0         1        0        
+omega2.Cl 0         0        1        
